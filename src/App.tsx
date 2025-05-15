@@ -1,33 +1,115 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect, useState } from "react";
+import { Duration, type DurationLikeObject } from "luxon";
 import "./App.css";
 
+const tokensToUnits = {
+  y: "years",
+  q: "quarters",
+  mon: "months",
+  w: "weeks",
+  d: "days",
+  h: "hours",
+  min: "minutes",
+  s: "seconds",
+  ms: "milliseconds",
+} as const;
+
+type Token = keyof typeof tokensToUnits;
+
+const parseDurationInput = (input: string) => {
+  const parts = input.split(/([a-zA-Z]+)/);
+  const pairs = [];
+  for (let i = 0; i < parts.length - 1; i += 2) {
+    pairs.push([parts[i], parts[i + 1]]);
+  }
+  const durationObject = {} as DurationLikeObject;
+  for (let [val, token] of pairs) {
+    const parsedVal = Number(val);
+    if (Number.isNaN(parsedVal)) {
+      return Duration.invalid("Invalid duration value");
+    }
+    if (!(token in tokensToUnits)) {
+      return Duration.invalid("Invalid duration token");
+    }
+    const unit = tokensToUnits[token as Token];
+    durationObject[unit] = Number(val);
+  }
+  return Duration.fromObject(durationObject);
+};
+
+const formatDuration = (duration: Duration) => {
+  return duration.rescale().toHuman();
+};
+
+interface DurationInputProps {
+  value: Duration;
+  onChange: (value: Duration) => void;
+}
+
+function DurationInput({ value, onChange }: DurationInputProps) {
+  const [input, setInput] = useState("");
+
+  useEffect(() => {
+    onChange(parseDurationInput(input));
+  }, [input, onChange]);
+
+  return (
+    <div>
+      <div>
+        <input
+          type="text"
+          onChange={(e) => setInput(e.target.value)}
+          value={input}
+        ></input>
+      </div>
+      <div>{value.isValid ? formatDuration(value) : value.invalidReason}</div>
+    </div>
+  );
+}
+
 function App() {
-  const [count, setCount] = useState(0);
+  const [durationA, setDurationA] = useState<Duration>(Duration.fromObject({}));
+  const [durationB, setDurationB] = useState<Duration>(Duration.fromObject({}));
+  const [operation, setOperation] = useState<"PLUS" | "MINUS">("PLUS");
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <table>
+        <tbody>
+          {Object.entries(tokensToUnits).map(([token, unit]) => (
+            <tr key={token}>
+              <td>
+                <code>{token}</code>
+              </td>
+              <td>{unit}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <hr />
+      <div className="section">
+        First duration:
+        <DurationInput value={durationA} onChange={setDurationA} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      <div className="section">
+        <button onClick={() => setOperation("PLUS")}>
+          {operation === "PLUS" ? "> Plus <" : "Plus"}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test
-        </p>
+        <button onClick={() => setOperation("MINUS")}>
+          {operation === "MINUS" ? "> Minus <" : "Minus"}
+        </button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="section">
+        Second duration:
+        <DurationInput value={durationB} onChange={setDurationB} />
+      </div>
+      <hr />
+      <div className="section">
+        <div>Result:</div>
+        {operation === "PLUS"
+          ? formatDuration(durationA.plus(durationB))
+          : formatDuration(durationA.minus(durationB))}
+      </div>
     </>
   );
 }
