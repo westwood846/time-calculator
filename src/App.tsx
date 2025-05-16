@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Duration, type DurationLikeObject } from "luxon";
 import "./App.css";
 
@@ -23,7 +23,7 @@ const parseDurationInput = (input: string) => {
     pairs.push([parts[i], parts[i + 1]]);
   }
   const durationObject = {} as DurationLikeObject;
-  for (let [val, token] of pairs) {
+  for (const [val, token] of pairs) {
     const parsedVal = Number(val);
     if (Number.isNaN(parsedVal)) {
       return Duration.invalid("Invalid duration value");
@@ -42,73 +42,107 @@ const formatDuration = (duration: Duration) => {
 };
 
 interface DurationInputProps {
-  value: Duration;
-  onChange: (value: Duration) => void;
+  input: string;
+  onChange: (input: string) => void;
+  onFocus: () => void;
 }
 
-function DurationInput({ value, onChange }: DurationInputProps) {
-  const [input, setInput] = useState("");
-
-  useEffect(() => {
-    onChange(parseDurationInput(input));
-  }, [input, onChange]);
-
+function DurationInput({ input, onChange, onFocus }: DurationInputProps) {
+  const duration = parseDurationInput(input);
   return (
-    <div>
-      <div>
-        <input
-          type="text"
-          onChange={(e) => setInput(e.target.value)}
-          value={input}
-        ></input>
+    <div className="duration-input">
+      <input
+        type="text"
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => onFocus()}
+        value={input}
+      ></input>
+      <div className="duration-input-display">
+        {duration.isValid ? formatDuration(duration) : duration.invalidReason}
+        &nbsp;
       </div>
-      <div>{value.isValid ? formatDuration(value) : value.invalidReason}</div>
     </div>
   );
 }
 
 function App() {
-  const [durationA, setDurationA] = useState<Duration>(Duration.fromObject({}));
-  const [durationB, setDurationB] = useState<Duration>(Duration.fromObject({}));
+  const [focusedInput, setFocusedInput] = useState<"A" | "B">("A");
+
+  const [durationInputA, setDurationInputA] = useState("");
+  const durationA = parseDurationInput(durationInputA);
+  const [durationInputB, setDurationInputB] = useState("");
+  const durationB = parseDurationInput(durationInputB);
+
+  const setFocusedDuration =
+    focusedInput === "A" ? setDurationInputA : setDurationInputB;
+  const focusedDuration =
+    focusedInput === "A" ? durationInputA : durationInputB;
+  const appendToFocusedDuration = (value: string) =>
+    setFocusedDuration(focusedDuration + value);
+
   const [operation, setOperation] = useState<"PLUS" | "MINUS">("PLUS");
 
   return (
     <>
-      <table>
-        <tbody>
+      <div className="calc-box">
+        <div className="input-box">
+          <DurationInput
+            input={durationInputA}
+            onChange={setDurationInputA}
+            onFocus={() => setFocusedInput("A")}
+          />
+          <div className="operator">{operation === "PLUS" ? "+" : "-"}</div>
+          <DurationInput
+            input={durationInputB}
+            onChange={setDurationInputB}
+            onFocus={() => setFocusedInput("B")}
+          />
+          <div className="operator">=</div>
+        </div>
+        <div className="result-box">
+          {operation === "PLUS"
+            ? formatDuration(durationA.plus(durationB))
+            : formatDuration(durationA.minus(durationB))}
+          &nbsp;
+        </div>
+      </div>
+
+      <div className="operator-dials-container">
+        <div className="operator-grid">
+          <button onClick={() => setOperation("PLUS")} title="Plus">
+            +
+          </button>
+          <button onClick={() => setOperation("MINUS")} title="Minus">
+            -
+          </button>
+        </div>
+      </div>
+
+      <div className="dials-container">
+        <div className="dial-grid">
+          {new Array(10)
+            .fill(0)
+            .map((_, i) => (i + 1) % 10)
+            .map((val) => (
+              <button
+                onClick={() => appendToFocusedDuration(String(val))}
+                key={val}
+              >
+                {val}
+              </button>
+            ))}
+        </div>
+        <div className="dial-grid">
           {Object.entries(tokensToUnits).map(([token, unit]) => (
-            <tr key={token}>
-              <td>
-                <code>{token}</code>
-              </td>
-              <td>{unit}</td>
-            </tr>
+            <button
+              onClick={() => appendToFocusedDuration(token)}
+              title={unit}
+              key={token}
+            >
+              {token}
+            </button>
           ))}
-        </tbody>
-      </table>
-      <hr />
-      <div className="section">
-        First duration:
-        <DurationInput value={durationA} onChange={setDurationA} />
-      </div>
-      <div className="section">
-        <button onClick={() => setOperation("PLUS")}>
-          {operation === "PLUS" ? "> Plus <" : "Plus"}
-        </button>
-        <button onClick={() => setOperation("MINUS")}>
-          {operation === "MINUS" ? "> Minus <" : "Minus"}
-        </button>
-      </div>
-      <div className="section">
-        Second duration:
-        <DurationInput value={durationB} onChange={setDurationB} />
-      </div>
-      <hr />
-      <div className="section">
-        <div>Result:</div>
-        {operation === "PLUS"
-          ? formatDuration(durationA.plus(durationB))
-          : formatDuration(durationA.minus(durationB))}
+        </div>
       </div>
     </>
   );
