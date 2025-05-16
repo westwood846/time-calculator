@@ -46,7 +46,7 @@ input {
   margin-top: 2rem;
 
   display: flex;
-  justify-content: end;
+  justify-content: space-between;
 }
 
 .operator-grid {
