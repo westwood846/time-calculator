@@ -1,20 +1,12 @@
 import { useState } from "react";
-import { DateTime, Duration, type DurationLikeObject } from "luxon";
 import "./App.css";
-
-const tokensToUnits = {
-  y: "years",
-  q: "quarters",
-  mon: "months",
-  w: "weeks",
-  d: "days",
-  h: "hours",
-  min: "minutes",
-  s: "seconds",
-  ms: "milliseconds",
-} as const;
-
-type Token = keyof typeof tokensToUnits;
+import {
+  DurationInput,
+  durationTokensToUnits,
+  formatDuration,
+  parseDurationInput,
+} from "./durations";
+import { DateInput, formatDate, parseDateInput } from "./dates";
 
 const modes = {
   DATE_DIFFERENCE: "Date Difference",
@@ -30,87 +22,6 @@ const operations = {
 } as const;
 
 type Operation = keyof typeof operations;
-
-const parseDurationInput = (input: string) => {
-  const parts = input.split(/([a-zA-Z]+)/);
-  const pairs = [];
-  for (let i = 0; i < parts.length - 1; i += 2) {
-    pairs.push([parts[i], parts[i + 1]]);
-  }
-  const durationObject = {} as DurationLikeObject;
-  for (const [val, token] of pairs) {
-    const parsedVal = Number(val);
-    if (Number.isNaN(parsedVal)) {
-      return Duration.invalid("Invalid duration value");
-    }
-    if (!(token in tokensToUnits)) {
-      return Duration.invalid("Invalid duration token");
-    }
-    const unit = tokensToUnits[token as Token];
-    durationObject[unit] = Number(val);
-  }
-  return Duration.fromObject(durationObject);
-};
-
-const formatDuration = (duration: Duration) => {
-  return duration.rescale().toHuman();
-};
-
-interface DurationInputProps {
-  input: string;
-  onChange: (input: string) => void;
-  onFocus: () => void;
-}
-
-function DurationInput({ input, onChange, onFocus }: DurationInputProps) {
-  const duration = parseDurationInput(input);
-  return (
-    <div className="duration-input">
-      <input
-        type="text"
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => onFocus()}
-        value={input}
-      ></input>
-      <div className="duration-input-display">
-        {duration.isValid ? formatDuration(duration) : duration.invalidReason}
-        &nbsp;
-      </div>
-    </div>
-  );
-}
-
-const parseDateInput = (input: string) => {
-  return DateTime.fromISO(input);
-};
-
-const formatDate = (date: DateTime) => {
-  return date.toLocaleString(DateTime.DATETIME_FULL);
-};
-
-interface DateInputProps {
-  input: string;
-  onChange: (input: string) => void;
-  onFocus: () => void;
-}
-
-function DateInput({ input, onChange, onFocus }: DateInputProps) {
-  const date = parseDateInput(input);
-  return (
-    <div className="duration-input">
-      <input
-        type="datetime-local"
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => onFocus()}
-        value={input}
-      ></input>
-      <div className="duration-input-display">
-        {date.isValid ? formatDate(date) : date.invalidReason}
-        &nbsp;
-      </div>
-    </div>
-  );
-}
 
 type Inputs = "DATE_A" | "DATE_B" | "DURATION_A" | "DURATION_B";
 
@@ -277,7 +188,7 @@ function App() {
             ))}
         </div>
         <div className="dial-grid">
-          {Object.entries(tokensToUnits).map(([token, unit]) => (
+          {Object.entries(durationTokensToUnits).map(([token, unit]) => (
             <button
               onClick={() => appendToFocusedDuration(token)}
               title={unit}
