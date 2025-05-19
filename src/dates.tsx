@@ -1,11 +1,18 @@
 import { DateTime } from "luxon";
 
-export const parseDateInput = (input: string) => {
+export const parseDateString = (input: string) => {
   return DateTime.fromISO(input);
 };
 
 export const formatDate = (date: DateTime) => {
   return date.toLocaleString(DateTime.DATETIME_FULL);
+};
+
+const formatDateString = (dateString: string) => {
+  if (dateString === "") return "";
+  const date = parseDateString(dateString);
+  if (!date.isValid) return date.invalidReason;
+  return formatDate(date);
 };
 
 interface DateInputProps {
@@ -15,7 +22,6 @@ interface DateInputProps {
 }
 
 export function DateInput({ input, onChange, onFocus }: DateInputProps) {
-  const date = parseDateInput(input);
   return (
     <div className="duration-input">
       <input
@@ -25,7 +31,7 @@ export function DateInput({ input, onChange, onFocus }: DateInputProps) {
         value={input}
       ></input>
       <div className="duration-input-display">
-        {date.isValid ? formatDate(date) : date.invalidReason}
+        {formatDateString(input)}
         &nbsp;
       </div>
     </div>

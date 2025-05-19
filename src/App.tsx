@@ -6,11 +6,11 @@ import {
   formatDuration,
   parseDurationInput,
 } from "./durations";
-import { DateInput, formatDate, parseDateInput } from "./dates";
+import { DateInput, formatDate, parseDateString } from "./dates";
 
 const modes = {
   DATE_DIFFERENCE: "Date Difference",
-  DURATION_FROM_DATE: "Duration from date",
+  DURATION_FROM_DATE: "Duration From Date",
   DURATIONS: "Durations",
 } as const;
 
@@ -45,9 +45,9 @@ function App() {
     setFocusedDuration(focusedDuration + value);
 
   const [dateInputA, setDateInputA] = useState("");
-  const dateA = parseDateInput(dateInputA);
+  const dateA = parseDateString(dateInputA);
   const [dateInputB, setDateInputB] = useState("");
-  const dateB = parseDateInput(dateInputB);
+  const dateB = parseDateString(dateInputB);
 
   const [operation, setOperation] = useState<Operation>("PLUS");
   const [mode, setMode] = useState<Mode>("DURATION_FROM_DATE");
@@ -112,25 +112,31 @@ function App() {
         <div className="result">
           {mode === "DURATIONS" && (
             <>
-              {durationA.isValid &&
-                durationB.isValid &&
-                (operation === "PLUS"
-                  ? formatDuration(durationA.plus(durationB))
-                  : formatDuration(durationA.minus(durationB)))}
+              {durationA.isValid && durationB.isValid && (
+                <>
+                  {operation === "PLUS"
+                    ? formatDuration(durationA.plus(durationB))
+                    : formatDuration(durationA.minus(durationB))}
+                </>
+              )}
             </>
           )}
           {mode === "DURATION_FROM_DATE" && (
             <>
-              {dateA.isValid && durationB.isValid && operation === "PLUS"
-                ? formatDate(dateA.plus(durationB))
-                : formatDate(dateA.minus(durationB))}
+              {dateA.isValid && durationB.isValid && (
+                <>
+                  {operation === "PLUS"
+                    ? formatDate(dateA.plus(durationB))
+                    : formatDate(dateA.minus(durationB))}
+                </>
+              )}
             </>
           )}
           {mode === "DATE_DIFFERENCE" && (
             <>
-              {dateA.isValid &&
-                dateB.isValid &&
-                formatDuration(dateB.diff(dateA))}
+              {dateA.isValid && dateB.isValid && (
+                <>{formatDuration(dateB.diff(dateA))}</>
+              )}
             </>
           )}
           &nbsp;
