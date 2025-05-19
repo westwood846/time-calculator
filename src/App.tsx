@@ -179,7 +179,9 @@ function App() {
               onFocus={() => setFocusedInput("DATE_A")}
             />
           )}
-          <div className="operator">{operation === "PLUS" ? "+" : "-"}</div>
+          <div className="calc-operator">
+            {operation === "PLUS" ? "+" : "-"}
+          </div>
           {(mode === "DURATIONS" || mode === "DURATION_FROM_DATE") && (
             <DurationInput
               input={durationInputB}
@@ -194,9 +196,9 @@ function App() {
               onFocus={() => setFocusedInput("DATE_B")}
             />
           )}
-          <div className="operator">=</div>
+          <div className="calc-operator">=</div>
         </div>
-        <div className="result-box">
+        <div className="result">
           {mode === "DURATIONS" && (
             <>
               {durationA.isValid &&
@@ -224,7 +226,7 @@ function App() {
         </div>
       </div>
 
-      <div className="operator-dials-container">
+      <div className="settings-box">
         <fieldset>
           <legend>Mode</legend>
           {Object.entries(modes).map(([key, label]) => (
@@ -244,11 +246,11 @@ function App() {
         <fieldset disabled={mode === "DATE_DIFFERENCE"}>
           <legend>Operation</legend>
           {Object.entries(operations).map(([key, label]) => (
-            <label htmlFor={`operatorRadio${key}`} key={key}>
+            <label htmlFor={`operationRadio${key}`} key={key}>
               <input
-                id={`operatorRadio${key}`}
+                id={`operationRadio${key}`}
                 type="radio"
-                name="operator"
+                name="operation"
                 value={key}
                 checked={operation === key}
                 onChange={() => setOperation(key as Operation)}
@@ -259,7 +261,7 @@ function App() {
         </fieldset>
       </div>
 
-      <div className="dials-container">
+      <div className="dials-box">
         <div className="dial-grid">
           {new Array(10)
             .fill(0)

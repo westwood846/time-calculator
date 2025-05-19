@@ -109,7 +109,6 @@ fieldset {
   border: 2px solid var(--secondary-light);
   border-radius: 0.5em;
   padding: 1em;
-  margin: 1em 0;
 }
 
 legend {
