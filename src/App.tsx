@@ -151,6 +151,8 @@ function App() {
     }
   };
 
+  const dialsDisabled = focusedInput === "DATE_A" || focusedInput === "DATE_B";
+
   return (
     <>
       <div className="calc-box">
@@ -207,7 +209,7 @@ function App() {
             <>
               {dateA.isValid &&
                 dateB.isValid &&
-                formatDuration(dateA.diff(dateB))}
+                formatDuration(dateB.diff(dateA))}
             </>
           )}
           &nbsp;
@@ -231,7 +233,7 @@ function App() {
             </>
           ))}
         </fieldset>
-        <fieldset>
+        <fieldset disabled={mode === "DATE_DIFFERENCE"}>
           <legend>Operation</legend>
           {Object.entries(operations).map(([key, label]) => (
             <>
@@ -257,6 +259,7 @@ function App() {
             .map((val) => (
               <button
                 onClick={() => appendToFocusedDuration(String(val))}
+                disabled={dialsDisabled}
                 key={val}
               >
                 {val}
@@ -268,6 +271,7 @@ function App() {
             <button
               onClick={() => appendToFocusedDuration(token)}
               title={unit}
+              disabled={dialsDisabled}
               key={token}
             >
               {token}
