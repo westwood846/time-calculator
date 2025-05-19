@@ -228,7 +228,7 @@ function App() {
         <fieldset>
           <legend>Mode</legend>
           {Object.entries(modes).map(([key, label]) => (
-            <>
+            <label htmlFor={`modeRadio${key}`} key={key}>
               <input
                 id={`modeRadio${key}`}
                 type="radio"
@@ -237,14 +237,14 @@ function App() {
                 checked={mode === key}
                 onChange={() => setModeAndFocus(key as Mode)}
               />
-              <label htmlFor={`modeRadio${key}`}>{label}</label>
-            </>
+              {label}
+            </label>
           ))}
         </fieldset>
         <fieldset disabled={mode === "DATE_DIFFERENCE"}>
           <legend>Operation</legend>
           {Object.entries(operations).map(([key, label]) => (
-            <>
+            <label htmlFor={`operatorRadio${key}`} key={key}>
               <input
                 id={`operatorRadio${key}`}
                 type="radio"
@@ -253,8 +253,8 @@ function App() {
                 checked={operation === key}
                 onChange={() => setOperation(key as Operation)}
               />
-              <label htmlFor={`operatorRadio${key}`}>{label}</label>
-            </>
+              {label}
+            </label>
           ))}
         </fieldset>
       </div>

@@ -1,48 +1,100 @@
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #646cff;
+  --primary-hover: #747bff;
+  --primary-active: #5a61e6;
+  --primary-disabled: #c5c8ff;
+  --focus-ring: rgba(100, 108, 255, 0.4);
+  --button-text: #ffffff;
+
+  --secondary-strong: #0f0f0f;
+  --secondary-medium: #777777;
+  --secondary-light: #cccccc;
+
+  --background: #fcfcfc;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-color: #7f88ff;
+    --primary-hover: #9aa1ff;
+    --primary-active: #646cff;
+    --primary-disabled: #3a3f80;
+    --focus-ring: rgba(127, 136, 255, 0.5);
+    --button-text: #ffffff;
+
+    --secondary-strong: #fcfcfc;
+    --secondary-medium: #777777;
+    --secondary-light: #444444;
+
+    --background: #0f0f0f;
+  }
 }
 
 body {
   margin: 0;
+
+  color: var(--secondary-strong);
+  background: var(--background);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+a:hover,
+a:focus-visible {
+  color: var(--primary-hover);
+  text-decoration: underline;
+}
+
+a:active {
+  color: var(--primary-active);
+}
+
+a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+  border-radius: 0.25em;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
+  background-color: var(--primary-color);
+  color: var(--button-text);
+  font-size: 1rem;
   padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  border: none;
+  border-radius: 0.5em;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
-button:hover {
-  border-color: #646cff;
+
+button:hover:not(:disabled) {
+  background-color: var(--primary-hover);
 }
-button:focus,
+
+button:active:not(:disabled) {
+  background-color: var(--primary-active);
+}
+
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+button:disabled {
+  background-color: var(--primary-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 h1, h2, h3 {
@@ -53,15 +105,87 @@ p {
   margin: 1rem 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+fieldset {
+  border: 2px solid var(--secondary-light);
+  border-radius: 0.5em;
+  padding: 1em;
+  margin: 1em 0;
+}
+
+legend {
+  font-weight: bold;
+  padding: 0 0.5em;
+}
+
+label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: 1rem;
+  margin-right: 1.5em;
+  cursor: pointer;
+  color: inherit;
+}
+
+input[type="radio"] {
+  appearance: none;
+  width: 1.1em;
+  height: 1.1em;
+  border: 2px solid var(--primary-color);
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+input[type="radio"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.55em;
+  height: 0.55em;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.2s ease-in-out;
+}
+
+input[type="radio"]:checked::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+input[type="radio"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+input[type="text"],
+input[type="datetime-local"] {
+  appearance: none;
+  background-color: transparent;
+  color: var(--secondary-strong);
+  font-size: 1rem;
+  padding: 1em 1.5em;
+  border: 2px solid #ccc;
+  border-radius: 0.5em;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus-visible,
+input[type="datetime-local"]:focus-visible {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+input[type="text"]:disabled,
+input[type="datetime-local"]:disabled {
+  background-color: #f0f0f0;
+  color: #888;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
