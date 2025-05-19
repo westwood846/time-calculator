@@ -85,7 +85,7 @@ const parseDateInput = (input: string) => {
 };
 
 const formatDate = (date: DateTime) => {
-  return date.toFormat("F");
+  return date.toLocaleString(DateTime.DATETIME_FULL);
 };
 
 interface DateInputProps {
@@ -155,6 +155,14 @@ function App() {
 
   return (
     <>
+      <h1>Time Calculator</h1>
+      <p>
+        Use this to calculate the difference between two dates, to add/subtract
+        a duration from a date or to add/subtract two durations from each other.
+        Dates use your browser's time-zone and all calculations are made using{" "}
+        <a href="https://github.com/moment/luxon">luxon</a>.
+      </p>
+
       <div className="calc-box">
         <div className="input-box">
           {mode === "DURATIONS" && (
