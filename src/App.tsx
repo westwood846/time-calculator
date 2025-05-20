@@ -67,6 +67,7 @@ function App() {
   return (
     <>
       <h1>Time Calculator</h1>
+
       <p>
         Use this to calculate the difference between two dates, to add/subtract
         a duration from a date or to add/subtract two durations from each other.
@@ -83,6 +84,7 @@ function App() {
               onFocus={() => setFocusedInput("DURATION_A")}
             />
           )}
+
           {(mode === "DURATION_FROM_DATE" || mode === "DATE_DIFFERENCE") && (
             <DateInput
               input={dateInputA}
@@ -90,9 +92,11 @@ function App() {
               onFocus={() => setFocusedInput("DATE_A")}
             />
           )}
+
           <div className="calc-operator">
             {operation === "PLUS" ? "+" : "-"}
           </div>
+
           {(mode === "DURATIONS" || mode === "DURATION_FROM_DATE") && (
             <DurationInput
               input={durationInputB}
@@ -100,6 +104,7 @@ function App() {
               onFocus={() => setFocusedInput("DURATION_B")}
             />
           )}
+
           {mode === "DATE_DIFFERENCE" && (
             <DateInput
               input={dateInputB}
@@ -107,8 +112,10 @@ function App() {
               onFocus={() => setFocusedInput("DATE_B")}
             />
           )}
+
           <div className="calc-operator">=</div>
         </div>
+
         <div className="result">
           {mode === "DURATIONS" && (
             <>
@@ -160,6 +167,7 @@ function App() {
             </label>
           ))}
         </fieldset>
+
         <fieldset disabled={mode === "DATE_DIFFERENCE"}>
           <legend>Operation</legend>
           {Object.entries(operations).map(([key, label]) => (
@@ -193,6 +201,7 @@ function App() {
               </button>
             ))}
         </div>
+
         <div className="dial-grid">
           {Object.entries(durationTokensToUnits).map(([token, unit]) => (
             <button

@@ -30,6 +30,7 @@ export function DateInput({ input, onChange, onFocus }: DateInputProps) {
         onFocus={() => onFocus()}
         value={input}
       ></input>
+
       <div className="duration-input-display">
         {formatDateString(input)}
         &nbsp;

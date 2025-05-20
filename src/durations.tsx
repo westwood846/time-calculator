@@ -60,6 +60,7 @@ export function DurationInput({
         value={input}
         placeholder="e.g. 1y3m20d"
       ></input>
+
       <div className="duration-input-display">
         {duration.isValid ? formatDuration(duration) : duration.invalidReason}
         &nbsp;
